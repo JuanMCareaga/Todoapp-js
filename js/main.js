@@ -1,78 +1,58 @@
 
-let tareas = [];
+let tareas = JSON.parse(localStorage.getItem("tareas")) || [];
 
 
-function mostrarTareas() {
-    if (tareas.length === 0) {
-        alert("No hay tareas en la lista.");
-    } else {
-        let lista = " Tus tareas:\n";
-        for (let i = 0; i < tareas.length; i++) {
-            lista += `${i + 1}. ${tareas[i]}\n`;
-        }
-        alert(lista);
-    }
+function guardarEnStorage() {
+  localStorage.setItem("tareas", JSON.stringify(tareas));
 }
 
-function agregarTarea(tarea) {
-    if (tarea.trim() !== "") {
-        tareas.push(tarea);
-        alert(` Tarea "${tarea}" agregada correctamente.`);
-    } else {
-        alert("No se puede agregar una tarea vacía.");
-    }
+function renderTareas() {
+  const lista = document.getElementById("listaTareas");
+  lista.innerHTML = ""; 
+
+  if (tareas.length === 0) {
+    const li = document.createElement("li");
+    li.textContent = "No hay tareas todavía.";
+    li.style.fontStyle = "italic";
+    lista.appendChild(li);
+    return;
+  }
+
+  tareas.forEach((tarea, index) => {
+    const li = document.createElement("li");
+    li.textContent = tarea.texto;
+
+    const btnEliminar = document.createElement("button");
+    btnEliminar.textContent = "❌";
+    btnEliminar.addEventListener("click", () => eliminarTarea(index));
+
+    li.appendChild(btnEliminar);
+    lista.appendChild(li);
+  });
 }
 
+function agregarTarea() {
+  const input = document.getElementById("nuevaTareaInput");
+  const texto = input.value.trim();
 
-function eliminarTarea(numero) {
-    if (numero >= 1 && numero <= tareas.length) {
-        const tareaEliminada = tareas.splice(numero - 1, 1);
-        alert(`Tarea "${tareaEliminada}" eliminada.`);
-    } else {
-        alert(" Número de tarea inválido.");
-    }
+  if (texto === "") return;
+
+  const nuevaTarea = { texto };
+  tareas.push(nuevaTarea);
+  guardarEnStorage();
+  renderTareas();
+
+  input.value = "";
 }
 
-
-function iniciarToDoApp() {
-    alert(" Bienvenido a tu To-Do App");
-
-    let opcion = "";
-
-    while (opcion !== "salir") {
-        opcion = prompt(
-           "Elige una opción:\n\n" +
-            "1. Agregar tarea\n" +
-            "2. Ver tareas\n" +
-            "3. Eliminar tarea\n" +
-            "Escribí 'salir' para terminar."
-        );
-
-        if (opcion === "1") {
-            const nuevaTarea = prompt("Escribí la nueva tarea:");
-            agregarTarea(nuevaTarea);
-
-        } else if (opcion === "2") {
-            mostrarTareas();
-
-        } else if (opcion === "3") {
-            if (tareas.length === 0) {
-                alert("No hay tareas para eliminar.");
-            } else {
-                mostrarTareas();
-                const numero = parseInt(prompt("Ingresá el número de la tarea que querés eliminar:"));
-                eliminarTarea(numero);
-            }
-
-        } else if (opcion === "salir") {
-            alert("¡Hasta luego!");
-        } else {
-            alert(" Opción no válida. Intentá de nuevo.");
-        }
-    }
-
-    console.log("Tareas finales:", tareas);
+function eliminarTarea(index) {
+  tareas.splice(index, 1);
+  guardarEnStorage();
+  renderTareas();
 }
 
 
-iniciarToDoApp();
+document.getElementById("agregarBtn").addEventListener("click", agregarTarea);
+
+
+renderTareas();
