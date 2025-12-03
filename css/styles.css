@@ -180,4 +180,15 @@ body {
   .controls {
     margin-top: 0;
   }
+
+  .task-card {
+        grid-template-columns: 1fr; /* 1 columna */
+        text-align: left;
+        gap: 6px; /* menos espacio */
+    }
+
+    .task-card button,
+    .task-card select {
+        justify-self: start; /* evita que queden flotando a la derecha */
+    }
 }
