@@ -55,10 +55,4 @@ Separado en:
 ```bash
 git clone https://github.com/tu-usuario/NoTeCuelgues.git
 
----
-
-👨‍💻 Autor
-
-Juan Manuel Careaga
-NoTeCuelgues — organiza tu día, no te cuelgues más.
 
