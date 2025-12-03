@@ -133,7 +133,7 @@ function renderTasks(){
 }
 
 
-function toggleEditMode(task) {
+function toggleEditMode(card,task) {
   Swal.fire({
     title: 'Editar tarea',
     html: `
