@@ -182,13 +182,13 @@ body {
   }
 
   .task-card {
-        grid-template-columns: 1fr; /* 1 columna */
+        grid-template-columns: 1fr; 
         text-align: left;
-        gap: 6px; /* menos espacio */
+        gap: 6px; 
     }
 
     .task-card button,
     .task-card select {
-        justify-self: start; /* evita que queden flotando a la derecha */
+        justify-self: start; 
     }
 }

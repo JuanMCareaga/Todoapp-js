@@ -218,9 +218,7 @@ taskForm.addEventListener('submit', (e) => {
   });
 });
 
-/* ---------------------------
-   Controles UI
-   --------------------------- */
+
 
 filterStatus.addEventListener('change', renderTasks);
 searchInput.addEventListener('input', debounce(renderTasks, 250));
@@ -297,9 +295,7 @@ loadExamplesBtn.addEventListener('click', async () => {
 });
 
 
-/* ---------------------------
-   Función debounce
-   --------------------------- */
+
 
 function debounce(fn, wait = 200){
   let t;
@@ -309,9 +305,6 @@ function debounce(fn, wait = 200){
   };
 }
 
-/* ---------------------------
-   Inicialización
-   --------------------------- */
 
 (async function init(){
   const stored = loadFromStorage();
