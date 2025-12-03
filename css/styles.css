@@ -1,0 +1,183 @@
+:root {
+  --bg: #f5f7fb;
+  --card: #fff;
+  --accent: #2b7cff;
+  --muted: #666;
+  --success: #2ebd59;
+  --danger: #ff6b6b;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: #222;
+}
+.app-header {
+  padding: 18px;
+  background: linear-gradient(90deg, var(--accent), #6fb3ff);
+  color: white;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.container {
+  padding: 20px;
+  max-width: 1000px;
+  margin: 18px auto;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 18px;
+}
+.add-task,
+.tasks-list,
+.controls {
+  background: var(--card);
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(10, 20, 40, 0.06);
+}
+
+.add-task{
+  min-height: 300px;
+  max-height: 300px;
+  overflow: hidden;
+}
+
+.controls {
+    margin-top: -300px;
+}
+
+.tasks-list {
+  height: 600px;    
+  overflow-y: auto; 
+}
+
+
+.add-task form input,
+.add-task textarea,
+.controls input,
+.controls select {
+  width: 100%;
+  padding: 8px;
+  margin: 6px 0;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+.form-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.form-actions button {
+  background: var(--accent);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+.tasks-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 120px;
+}
+.task-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  align-items: center;
+  background: #fff;
+}
+.task-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.task-title {
+  font-weight: 600;
+}
+.task-desc {
+  color: #000000;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+.task-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.task-actions button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.status-select {
+  padding: 6px;
+  border-radius: 8px;
+}
+.badge {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+.badge.por-hacer {
+  background: #f0f6ff;
+  color: var(--accent);
+}
+.badge.no-realizada {
+  background: #fff0f0;
+  color: var(--danger);
+}
+.badge.completada {
+  background: #f0fff3;
+  color: var(--success);
+}
+.controls-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+.footer {
+  max-width: 1000px;
+  margin: 18px auto;
+  text-align: center;
+  color: var(--muted);
+}
+.editing {
+  background: #fffbe6;
+}
+.small-muted {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+@media (max-width: 880px) {
+  
+  .app-header {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  
+  .container {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+
+
+  .controls {
+    margin-top: 0;
+  }
+}

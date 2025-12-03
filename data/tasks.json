@@ -1,0 +1,42 @@
+[
+  {
+    "id": "t1",
+    "title": "Comprar carne para el asado 🥩",
+    "description": "Cortar vacío y chorizos. 2 kg aprox.",
+    "status": "por hacer",
+    "createdAt": "2025-11-28T10:00:00Z",
+    "due": "2025-12-07"
+  },
+  {
+    "id": "t2",
+    "title": "Enviar informe semanal 💼",
+    "description": "Adjuntar métricas y entregables.",
+    "status": "no realizada",
+    "createdAt": "2025-11-25T14:00:00Z",
+    "due": "2025-11-30"
+  },
+  {
+    "id": "t3",
+    "title": "Estudiar JavaScript 👨‍💻",
+    "description": "Maldito fetch.",
+    "status": "completada",
+    "createdAt": "2025-11-20T09:30:00Z",
+    "due": "2025-11-21"
+  },
+  {
+    "id": "t4",
+    "title": "Diseñar mockup Figma 🎨",
+    "description": "Header y página de producto.",
+    "status": "completada",
+    "createdAt": "2025-11-20T09:30:00Z",
+    "due": "2025-11-21"
+  },
+  {
+    "id": "t5",
+    "title": "Entregar el proyecto en tiempo y forma 😫",
+    "description": "Espero que me aprueben.",
+    "status": "completada",
+    "createdAt": "2025-11-20T09:30:00Z",
+    "due": "2025-11-21"
+  }
+]

@@ -1,24 +1,88 @@
 <!DOCTYPE html>
 <html lang="es">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>To-Do App</title>
-    <link rel="stylesheet" href="styles.css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="icon" type="image/png" href="media/logo.png" />
+
+    <title>NoTeCuelgues</title>
+
+    <!-- LibrerIas -->
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="./css/styles.css" />
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script defer src="js/data.js"></script>
     <script defer src="js/main.js"></script>
   </head>
   <body>
-    <h1>Mi To-Do App</h1>
-
-    <div class="todo-container">
-      <input
-        type="text"
-        id="nuevaTareaInput"
-        placeholder="Escribí una nueva tarea"
+    <header class="app-header">
+      <img
+        src="media/logo.png"
+        alt=""
+        style="width: 150px; border-radius: 10px"
       />
-      <button id="agregarBtn">Agregar</button>
-    </div>
+      <div id="summary" class="summary"></div>
+    </header>
 
-    <ul id="listaTareas"></ul>
+    <main class="container">
+      <section class="add-task">
+        <h2>Crear tarea</h2>
+        <form id="taskForm">
+          <input id="titleInput" required placeholder="Título" />
+          <input id="dueInput" type="date" />
+          <textarea
+            id="descInput"
+            placeholder="Descripción (opcional)"
+          ></textarea>
+          <div class="form-actions">
+            <select id="initialStatus">
+              <option value="por hacer">Por hacer</option>
+              <option value="no realizada">No realizada</option>
+              <option value="completada">Completada</option>
+            </select>
+            <button type="submit">Agregar tarea</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="tasks-list">
+        <h2>Tareas</h2>
+        <div
+          id="tasksContainer"
+          class="tasks-container"
+          aria-live="polite"
+        ></div>
+      </section>
+
+      <section class="controls">
+        <h3>Filtrar por:</h3>
+        <div class="controls-row">
+          <select id="filterStatus">
+            <option value="all">Todas</option>
+            <option value="por hacer">Por hacer</option>
+            <option value="no realizada">No realizada</option>
+            <option value="completada">Completada</option>
+          </select>
+          <input id="searchInput" placeholder="Buscar por título..." />
+          <button id="loadExamplesBtn">Cargar tareas de ejemplo</button>
+          <button id="clearBtn">Borrar todas</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <small>Hecho por JMC</small>
+    </footer>
   </body>
 </html>
