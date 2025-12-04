@@ -16,6 +16,27 @@ body {
   background: var(--bg);
   color: #222;
 }
+
+button{
+  padding: 10px 15px 10px 15px;
+  border-radius: 10px;
+  border: none;
+  background-color: var(--accent);
+  color: white;
+  cursor: pointer;
+  width: 100%;
+}
+
+button:hover{
+  background-color: #1a5edb;
+  transform: scale(1.02);
+  transition: all 0.3s ease-in-out;
+}
+
+#clearBtn{
+  background-color: var(--danger);
+}
+
 .app-header {
   padding: 18px;
   background: linear-gradient(90deg, var(--accent), #6fb3ff);
@@ -72,14 +93,7 @@ body {
   gap: 8px;
   align-items: center;
 }
-.form-actions button {
-  background: var(--accent);
-  color: white;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-}
+
 .tasks-container {
   display: flex;
   flex-direction: column;
