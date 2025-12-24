@@ -13,72 +13,67 @@ const summary = document.getElementById('summary');
 let tasks = [];
 
 
-function makeStatusBadge(status){
+function makeStatusBadge(status) {
   const cls = status === 'por hacer' ? 'por-hacer' :
-              status === 'no realizada' ? 'no-realizada' : 'completada';
-  const span = document.createElement('span');
-  span.className = `badge ${cls}`;
-  span.textContent = status;
-  return span;
+    status === 'no realizada' ? 'no-realizada' : 'completada';
+  return `<span class="badge ${cls}">${status}</span>`;
 }
 
-function renderTasks(){
-  const q = searchInput.value.trim().toLowerCase();
+function renderTasks() {
+  const searchQuery = searchInput.value.trim().toLowerCase();
   const filter = filterStatus.value;
 
-  const visible = tasks.filter(t => {
-    if (filter !== 'all' && t.status !== filter) return false;
-    if (q && !t.title.toLowerCase().includes(q)) return false;
+  const visibleTasks = tasks.filter(task => {
+    if (filter !== 'all' && task.status !== filter) return false;
+    if (searchQuery && !task.title.toLowerCase().includes(searchQuery)) return false;
     return true;
   });
 
-  tasksContainer.innerHTML = '';
+  const summaryData = computeSummary();
+  summary.innerHTML = `<div class="small-muted">Tareas: ${summaryData.total} — Por hacer: ${summaryData.byStatus['por hacer']} — No realizada: ${summaryData.byStatus['no realizada']} — Completadas: ${summaryData.byStatus['completada']}</div>`;
 
-  const s = computeSummary();
-  summary.innerHTML = `<div class="small-muted">Tareas: ${s.total} — Por hacer: ${s.byStatus['por hacer']} — No realizada: ${s.byStatus['no realizada']} — Completadas: ${s.byStatus['completada']}</div>`;
-
-  if (visible.length === 0) {
+  if (visibleTasks.length === 0) {
     tasksContainer.innerHTML = `<div class="small-muted">No hay tareas que mostrar.</div>`;
     return;
   }
 
-  visible.map(task => {
-    const card = document.createElement('div');
-    card.className = 'task-card';
-    card.dataset.id = task.id;
+  /* Renderizar tareas */
 
-    const meta = document.createElement('div');
-    meta.className = 'task-meta';
+  tasksContainer.innerHTML = visibleTasks.map(task => {
+    const isDue = task.due ? `· Vence: ${fmtDate(task.due)}` : '';
+    const statusOptions = ['por hacer', 'no realizada', 'completada'].map(statusValue =>
+      `<option value="${statusValue}" ${statusValue === task.status ? 'selected' : ''}>${statusValue}</option>`
+    ).join('');
 
-    const title = document.createElement('div');
-    title.className = 'task-title';
-    title.textContent = task.title;
-    meta.appendChild(title);
+    return `
+    <div class="task-card" data-id="${task.id}">
+      <div class="task-meta">
+        <div class="task-title">${task.title}</div>
+        <div class="task-desc">${task.description || ''}</div>
+        <div class="small-muted">Creada: ${fmtDate(task.createdAt)} ${isDue}</div>
+      </div>
+      <div class="task-actions">
+        <select class="status-select" data-id="${task.id}">
+          ${statusOptions}
+        </select>
+        <button class="btn-edit" data-id="${task.id}" title="Editar"><i class="fa-solid fa-pen-to-square"></i></button>
+        <button class="btn-delete" data-id="${task.id}" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+        ${makeStatusBadge(task.status)}
+      </div>
+    </div>
+    `;
+  }).join('');
+}
 
-    const desc = document.createElement('div');
-    desc.className = 'task-desc';
-    desc.textContent = task.description || '';
-    meta.appendChild(desc);
+/* Manejo de eventos en tareas */
 
-    const dates = document.createElement('div');
-    dates.className = 'small-muted';
-    dates.textContent = `Creada: ${fmtDate(task.createdAt)} ${task.due ? '· Vence: ' + fmtDate(task.due) : ''}`;
-    meta.appendChild(dates);
-
-    const actions = document.createElement('div');
-    actions.className = 'task-actions';
-
-    const select = document.createElement('select');
-    select.className = 'status-select';
-    ['por hacer','no realizada','completada'].forEach(sv => {
-      const opt = document.createElement('option');
-      opt.value = sv;
-      opt.textContent = sv;
-      if (sv === task.status) opt.selected = true;
-      select.appendChild(opt);
-    });
-    select.addEventListener('change', (e) => {
-      task.status = e.target.value;
+tasksContainer.addEventListener('change', (e) => {
+  if (e.target.classList.contains('status-select')) {
+    const taskId = e.target.dataset.id;
+    const newStatus = e.target.value;
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      task.status = newStatus;
       persist();
       Swal.fire({
         icon: 'success',
@@ -87,81 +82,87 @@ function renderTasks(){
         showConfirmButton: false
       });
       renderTasks();
-    });
-    actions.appendChild(select);
+    }
+  }
+});
 
-    const editBtn = document.createElement('button');
-    editBtn.title = 'Editar';
-    editBtn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>';
-    editBtn.addEventListener('click', () => toggleEditMode(card, task));
-    actions.appendChild(editBtn);
+/* Manejo de botones Editar y Eliminar */
 
-    const delBtn = document.createElement('button');
-    delBtn.title = 'Eliminar';
-    delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
-    delBtn.addEventListener('click', () => {
+tasksContainer.addEventListener('click', (e) => {
+  const editBtn = e.target.closest('.btn-edit');
+  const deleteBtn = e.target.closest('.btn-delete');
+
+  if (editBtn) {
+    const taskId = editBtn.dataset.id;
+    const task = tasks.find(t => t.id === taskId);
+    if (task) toggleEditMode(task);
+  }
+
+  if (deleteBtn) {
+    const taskId = deleteBtn.dataset.id;
+    const task = tasks.find(t => t.id === taskId);
+    if (task) confirmDelete(task);
+  }
+});
+
+function confirmDelete(task) {
+  Swal.fire({
+    title: '¿Eliminar tarea?',
+    text: 'No podrás deshacer esta acción',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      tasks = tasks.filter(t => t.id !== task.id);
+      persist();
+      renderTasks();
       Swal.fire({
-        title: '¿Eliminar tarea?',
-        text: 'No podrás deshacer esta acción',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Eliminar',
-        cancelButtonText: 'Cancelar'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          tasks = tasks.filter(t => t.id !== task.id);
-          persist();
-          renderTasks();
-          Swal.fire({
-            icon: 'success',
-            title: 'Tarea eliminada',
-            timer: 1000,
-            showConfirmButton: false
-          });
-        }
+        icon: 'success',
+        title: 'Tarea eliminada',
+        timer: 1000,
+        showConfirmButton: false
       });
-    });
-    actions.appendChild(delBtn);
-
-    const badge = makeStatusBadge(task.status);
-    actions.appendChild(badge);
-
-    card.appendChild(meta);
-    card.appendChild(actions);
-    tasksContainer.appendChild(card);
+    }
   });
 }
 
+/* Modo edición de tareas */
 
-function toggleEditMode(card,task) {
+function toggleEditMode(task) {
+  const today = new Date().toISOString().split('T')[0];
   Swal.fire({
     title: 'Editar tarea',
     html: `
         <input id="swal-title" class="swal2-input" value="${task.title}">
         <textarea id="swal-desc" class="swal2-textarea">${task.description || ""}</textarea>
-        <input id="swal-due" type="date" class="swal2-input" value="${task.due || ""}">
+        <input id="swal-due" type="date" class="swal2-input" value="${task.due || ""}" min="${today}">
     `,
     showCancelButton: true,
     confirmButtonText: 'Guardar',
     cancelButtonText: 'Cancelar',
     preConfirm: () => {
-      return {
-        title: document.getElementById('swal-title').value.trim(),
-        desc: document.getElementById('swal-desc').value.trim(),
-        due: document.getElementById('swal-due').value
-      };
+      const title = document.getElementById('swal-title').value.trim();
+      const desc = document.getElementById('swal-desc').value.trim();
+      const due = document.getElementById('swal-due').value;
+      const todayDate = new Date().toISOString().split('T')[0];
+
+      if (!title) {
+        Swal.showValidationMessage('El título es obligatorio');
+        return false;
+      }
+
+      if (due && due < todayDate) {
+        Swal.showValidationMessage('La fecha de vencimiento no puede ser anterior a hoy.');
+        return false;
+      }
+
+      return { title, desc, due };
     }
   }).then(result => {
     if (result.isConfirmed) {
       const { title, desc, due } = result.value;
-
-      if (!title) {
-        Swal.fire({
-          icon: 'error',
-          title: 'El título es obligatorio'
-        });
-        return;
-      }
 
       task.title = title;
       task.description = desc;
@@ -180,18 +181,28 @@ function toggleEditMode(card,task) {
   });
 }
 
-/* ---------------------------
-   Formulario: crear tarea
-   --------------------------- */
+/* Manejo del formulario de creación */
 
 taskForm.addEventListener('submit', (e) => {
   e.preventDefault();
 
   const title = titleInput.value.trim();
+  const due = dueInput.value;
+  const today = new Date().toISOString().split('T')[0];
+
   if (!title) {
     Swal.fire({
       icon: 'error',
       title: 'El título es obligatorio'
+    });
+    return;
+  }
+
+  if (due && due < today) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Fecha inválida',
+      text: 'La fecha de vencimiento no puede ser anterior a hoy.'
     });
     return;
   }
@@ -202,7 +213,7 @@ taskForm.addEventListener('submit', (e) => {
     description: descInput.value.trim(),
     status: initialStatus.value,
     createdAt: new Date().toISOString(),
-    due: dueInput.value || null
+    due: due || null
   };
 
   tasks.unshift(newTask);
@@ -219,6 +230,7 @@ taskForm.addEventListener('submit', (e) => {
 });
 
 
+/* Filtros y búsqueda */
 
 filterStatus.addEventListener('change', renderTasks);
 searchInput.addEventListener('input', debounce(renderTasks, 250));
@@ -247,6 +259,9 @@ clearBtn.addEventListener('click', () => {
     }
   });
 });
+
+
+/* Cargar tareas de ejemplo desde JSON */
 
 const loadExamplesBtn = document.getElementById('loadExamplesBtn');
 
@@ -295,9 +310,7 @@ loadExamplesBtn.addEventListener('click', async () => {
 });
 
 
-
-
-function debounce(fn, wait = 200){
+function debounce(fn, wait = 200) {
   let t;
   return (...args) => {
     clearTimeout(t);
@@ -305,8 +318,12 @@ function debounce(fn, wait = 200){
   };
 }
 
+/* correccion de fecha minima en dueInput */
 
-(async function init(){
+(async function init() {
+  const today = new Date().toISOString().split('T')[0];
+  dueInput.min = today;
+
   const stored = loadFromStorage();
   if (stored && Array.isArray(stored)) {
     tasks = stored;

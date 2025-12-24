@@ -2,6 +2,7 @@
 const generateId = () => 't' + Math.random().toString(36).slice(2,9);
 const persist = () => localStorage.setItem('todo.tasks', JSON.stringify(tasks));
 
+/* Cargar tareas desde localStorage */
 
 const loadFromStorage = () => {
   const raw = localStorage.getItem('todo.tasks');
@@ -26,24 +27,15 @@ async function loadRemoteTasks(){
   }
 }
 
-/* Funsiones de orden superior */
-function createStatusUpdater(newStatus) {
-  return function updateStatusById(taskId) {
-    const t = tasks.find(t => t.id === taskId);
-    if (t) {
-      t.status = newStatus;
-      persist();
-      renderTasks();
-    }
-  };
-}
+
+/* Resumen de tareas en el navbar */
 
 function computeSummary() {
   const total = tasks.length;
   const byStatus = {
-    'por hacer': tasks.filter(t => t.status === 'por hacer').length,
-    'no realizada': tasks.filter(t => t.status === 'no realizada').length,
-    'completada': tasks.filter(t => t.status === 'completada').length
+    'por hacer': tasks.filter(task => task.status === 'por hacer').length,
+    'no realizada': tasks.filter(task => task.status === 'no realizada').length,
+    'completada': tasks.filter(task => task.status === 'completada').length
   };
   return { total, byStatus };
 }
